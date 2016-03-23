@@ -26,6 +26,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -85,28 +86,14 @@ Broos ReadFile(const string & inputFileName)
 	return bros;
 }
 
-int CalcMinPrice(const Broos & bros)
+int CalcBisection(const Broos & bros)
 {
+	int numCuts = bros.numCut;
 	int price = 0;
 	int length = bros.length;
-	int numCuts = bros.numCut;
+	vector<int> numbersBros = { length };
 
-	if (numCuts > length)
-	{
-		cout << "Error number cuts > length" << endl;
-		return 0;
-	}
-
-	if (numCuts > 0)
-	{
-		price = length;
-		--numCuts;
-	}
-	length = numCuts + 1;
-	vector<int> numbersBros;
-	numbersBros.push_back(length);
-
-	while (numbersBros.size() > 0)
+	while (numCuts > 0)
 	{
 		if (numbersBros[0] > 1)
 		{
@@ -114,10 +101,51 @@ int CalcMinPrice(const Broos & bros)
 			length = numbersBros[0];
 			numbersBros.push_back(length / 2);
 			numbersBros.push_back(length - length / 2);
+			--numCuts;
+			numbersBros.erase(numbersBros.begin());
+			sort(numbersBros.begin(), numbersBros.end());
 		}
-		numbersBros.erase(numbersBros.begin());
+		else
+		{
+			numbersBros.erase(numbersBros.begin());
+		}
+
 	}
 	return price;
+}
+
+int CalcSubstraction(const Broos & bros)
+{
+	int length = bros.length;
+
+	Broos locBros = bros;
+
+	locBros.length = bros.numCut;
+	locBros.numCut = bros.numCut - 1;
+	int price = CalcBisection(locBros) + length;
+	return price;
+}
+
+int CalcMinPrice(const Broos & bros)
+{
+	int length = bros.length;
+	int numCuts = bros.numCut;
+
+	if (numCuts >= length || numCuts <= 0)
+	{
+		return 0;
+	}
+
+	
+
+	int minPrice = CalcBisection(bros);
+	int locPrice = CalcSubstraction(bros);
+
+	if (minPrice > locPrice)
+	{
+		minPrice = locPrice;
+	}
+	return minPrice;
 }
 
 int main()
