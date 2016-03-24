@@ -150,11 +150,19 @@ int CalcMinPrice(const Broos & bros)
 
 int main()
 {
-	string nameInputFile = "input.txt";
+	/*			string nameInputFile = "input.txt";
 	string nameOutFile = "output.txt";
 	ofstream outFile(nameOutFile);
 	Broos bros;
-	bros = ReadFile(nameInputFile);
-	outFile << CalcMinPrice(bros);
+	bros = ReadFile(nameInputFile);*/
+
+	Broos bros;
+
+	while (bros.length != -1)
+	{
+		cin >> bros.length;
+		cin >> bros.numCut;
+		cout << "Price: " <<  CalcMinPrice(bros) << endl;
+	}
 	return 0;
 }
