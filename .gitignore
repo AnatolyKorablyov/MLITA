@@ -38,7 +38,7 @@
 *.ilk
 
 # Folders
-Debug\
-Release\
+Debug
+Release
 .\Debug\
 .\Release\
