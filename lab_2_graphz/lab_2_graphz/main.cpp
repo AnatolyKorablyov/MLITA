@@ -93,30 +93,101 @@ void SortGraph(Graph & graphKraskal)
 	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), comp);
 }
 
-void CalcMinPath(Graph & graphKraskal)
+bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
+{
+	for (auto i : pathGrapth.graphVector)
+	{
+		if (node == i.home || node == i.destination)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+GrapthPath CalcMinPath(const Graph & graphKraskal)
 {
 	GrapthPath pathGrapth;
 	std::vector<GraphNode> vectorGrapth = graphKraskal.graphVector;
-
+	pathGrapth.graphVector.push_back(vectorGrapth[0]);
+	pathGrapth.sizePath = vectorGrapth[0].weight;
+	for (size_t i = 0; i < graphKraskal.numNodes - 2; ++i)
+	{
+		for (auto j : vectorGrapth)
+		{
+			if ((!CheckNode(j.home, pathGrapth) && CheckNode(j.destination, pathGrapth)) || 
+				(CheckNode(j.home, pathGrapth) && !CheckNode(j.destination, pathGrapth)))
+			{
+				pathGrapth.graphVector.push_back(j);
+				pathGrapth.sizePath += j.weight;
+				break;
+			}
+		}
+	}
+	return pathGrapth;
 }
+
+void RecordPathToOutputFile(const std::string & outputFileName, const GrapthPath & pathGrapth)
+{
+	std::ofstream outFile(outputFileName);
+	outFile << pathGrapth.sizePath << std::endl;
+	for (auto i : pathGrapth.graphVector)
+	{
+		outFile << i.home << " " << i.destination << std::endl;
+	}
+}
+
+void PrintErrorReadFromFile()
+{
+	std::cout << "Error read input file!" << std::endl;
+}
+
+void PrintErrorSizeValues()
+{
+	std::cout << "the number of settlements and the roads are not in a range" << std::endl;
+	std::cout << "correct range (1 <= settlements <= 10000) and (1 <= roads <= 100000)" << std::endl;
+}
+
 bool Kraskal(const std::string & inputFileName, const std::string & outputFileName)
 {
 	Graph graphKraskal;
 	if (!ReadFromFile(graphKraskal, inputFileName))
 	{
+		PrintErrorReadFromFile();
 		return false;
 	}
-	std::cout << graphKraskal.numNodes << " " << graphKraskal.numRoad << std::endl;
-	for (auto i : graphKraskal.graphVector)
+	else if (!(graphKraskal.numNodes >= 1 && graphKraskal.numNodes <= 10000 &&
+		graphKraskal.numRoad >= 1 && graphKraskal.numRoad <= 100000))
 	{
-		std::cout << i.home << " " << i.destination << " " << i.weight << std::endl;
+		PrintErrorSizeValues();
+		return false;
 	}
 	SortGraph(graphKraskal);
+	GrapthPath pathGrapth;
+	pathGrapth = CalcMinPath(graphKraskal);
+	RecordPathToOutputFile(outputFileName, pathGrapth);
+	return true;
 }
 
-int main()
+void PrintExample()
 {
-	std::string inputFileName = "input.txt";
+	std::cout << "Input Failed" << std::endl;
+	std::cout << "test.exe \"input.txt\" \"output.txt\"" << std::endl;
+}
+
+int main(int argc, char * argv[])
+{
+	/*std::string inputFileName = "input.txt";
 	std::string outputFileName = "output.txt";
-	return Kraskal(inputFileName, outputFileName);
+	*/
+	if (argc == 3)
+	{
+		return Kraskal(/*inputFileName*/ argv[1], /*outputFileName*/ argv[2]);
+	}
+	else
+	{
+		PrintExample();
+		return 1;
+	}
+	
 }
