@@ -4,6 +4,8 @@
 #include <string>
 #include <algorithm>
 
+static const unsigned MAX_SETTLEMENTS = 10000;
+static const unsigned MAX_ROADS = 100000;
 
 struct GraphNode
 {
@@ -156,8 +158,8 @@ bool KraskalRoads(const std::string & inputFileName, const std::string & outputF
 		PrintErrorReadFromFile();
 		return false;
 	}
-	else if (!(graphKraskal.numNodes >= 1 && graphKraskal.numNodes <= 10000 &&
-		graphKraskal.numRoad >= 1 && graphKraskal.numRoad <= 100000))
+	else if (!(graphKraskal.numNodes >= 1 && graphKraskal.numNodes <= MAX_SETTLEMENTS &&
+		graphKraskal.numRoad >= 1 && graphKraskal.numRoad <= MAX_ROADS))
 	{
 		PrintErrorSizeValues();
 		return false;
