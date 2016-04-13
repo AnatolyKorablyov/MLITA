@@ -83,14 +83,14 @@ bool ReadFromFile(Graph & graphKraskal, const std::string & nameFile)
 	return true;
 }
 
-bool comp(GraphNode a, GraphNode b)
+bool compareWeight(GraphNode a, GraphNode b)
 {
 	return a.weight < b.weight;
 }
 
 void SortGraph(Graph & graphKraskal)
 {
-	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), comp);
+	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), compareWeight);
 }
 
 bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
@@ -148,7 +148,7 @@ void PrintErrorSizeValues()
 	std::cout << "correct range (1 <= settlements <= 10000) and (1 <= roads <= 100000)" << std::endl;
 }
 
-bool Kraskal(const std::string & inputFileName, const std::string & outputFileName)
+bool KraskalRoads(const std::string & inputFileName, const std::string & outputFileName)
 {
 	Graph graphKraskal;
 	if (!ReadFromFile(graphKraskal, inputFileName))
@@ -182,7 +182,7 @@ int main(int argc, char * argv[])
 	*/
 	if (argc == 3)
 	{
-		return Kraskal(/*inputFileName*/ argv[1], /*outputFileName*/ argv[2]);
+		return KraskalRoads(/*inputFileName*/ argv[1], /*outputFileName*/ argv[2]);
 	}
 	else
 	{
