@@ -21,7 +21,7 @@ struct Graph
 	std::vector<GraphNode> graphVector;
 };
 
-struct GrapthPath
+struct GraphPath
 {
 	int sizePath;
 	std::vector<GraphNode> graphVector;
@@ -50,7 +50,7 @@ std::vector<int> EnterIntWithSpaces(const std::string & string)
 	return numbers;
 }
 
-bool ReadFromFile(Graph & graphKraskal, const std::string & nameFile)
+bool ReadFromFile(Graph & KruskalGraph, const std::string & nameFile)
 {
 	
 	GraphNode nodeGraph;
@@ -70,22 +70,22 @@ bool ReadFromFile(Graph & graphKraskal, const std::string & nameFile)
 		vectorNumbers = EnterIntWithSpaces(string);
 		if (count == 0 && vectorNumbers.size() == 2)
 		{
-			graphKraskal.numNodes = vectorNumbers[0];
-			graphKraskal.numRoad = vectorNumbers[1];
+			KruskalGraph.numNodes = vectorNumbers[0];
+			KruskalGraph.numRoad = vectorNumbers[1];
 		}
 		else if (count > 0 && vectorNumbers.size() == 3)
 		{
 			nodeGraph.home = vectorNumbers[0];
 			nodeGraph.destination = vectorNumbers[1];
 			nodeGraph.weight = vectorNumbers[2];
-			graphKraskal.graphVector.push_back(nodeGraph);
+			KruskalGraph.graphVector.push_back(nodeGraph);
 		}
 		count += 1;
 	}
 	return true;
 }
 
-bool compareWeight(GraphNode a, GraphNode b)
+bool compareWeight(GraphNode a, GraphNode b) const
 {
 	return a.weight < b.weight;
 }
@@ -95,9 +95,9 @@ void SortGraph(Graph & graphKraskal)
 	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), compareWeight);
 }
 
-bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
+bool CheckNode(unsigned node, const GrapthPath & pathGraph)  const
 {
-	for (auto i : pathGrapth.graphVector)
+	for (auto i : pathGraph.graphVector)
 	{
 		if (node == i.home || node == i.destination)
 		{
@@ -109,31 +109,31 @@ bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
 
 GrapthPath CalcMinPath(const Graph & graphKraskal)
 {
-	GrapthPath pathGrapth;
+	GraphPath pathGraph;
 	std::vector<GraphNode> vectorGrapth = graphKraskal.graphVector;
-	pathGrapth.graphVector.push_back(vectorGrapth[0]);
-	pathGrapth.sizePath = vectorGrapth[0].weight;
+	pathGraph.graphVector.push_back(vectorGrapth[0]);
+	pathGraph.sizePath = vectorGrapth[0].weight;
 	for (size_t i = 0; i < graphKraskal.numNodes - 2; ++i)
 	{
 		for (auto j : vectorGrapth)
 		{
-			if ((!CheckNode(j.home, pathGrapth) && CheckNode(j.destination, pathGrapth)) || 
-				(CheckNode(j.home, pathGrapth) && !CheckNode(j.destination, pathGrapth)))
+			if ((!CheckNode(j.home, pathGraph) && CheckNode(j.destination, pathGraph)) || 
+				(CheckNode(j.home, pathGraph) && !CheckNode(j.destination, pathGraph)))
 			{
-				pathGrapth.graphVector.push_back(j);
-				pathGrapth.sizePath += j.weight;
+				pathGraph.graphVector.push_back(j);
+				pathGraph.sizePath += j.weight;
 				break;
 			}
 		}
 	}
-	return pathGrapth;
+	return pathGraph;
 }
 
-void RecordPathToOutputFile(const std::string & outputFileName, const GrapthPath & pathGrapth)
+void RecordPathToOutputFile(const std::string & outputFileName, const GrapthPath & pathGraph)
 {
 	std::ofstream outFile(outputFileName);
-	outFile << pathGrapth.sizePath << std::endl;
-	for (auto i : pathGrapth.graphVector)
+	outFile << pathGraph.sizePath << std::endl;
+	for (auto i : pathGraph.graphVector)
 	{
 		outFile << i.home << " " << i.destination << std::endl;
 	}
