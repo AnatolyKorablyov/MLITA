@@ -74,6 +74,7 @@ Broos ReadFile(const string & inputFileName)
 	{
 		string mainString;
 		std::getline(inpFile, mainString);
+		std::cout << mainString << std::endl;
 		vector<int> numbers;
 		if (numStr == 0)
 		{
@@ -150,13 +151,12 @@ int CalcMinPrice(const Broos & bros)
 
 int main()
 {
-	/*			string nameInputFile = "input.txt";
+			string nameInputFile = "input.txt";
 	string nameOutFile = "output.txt";
 	ofstream outFile(nameOutFile);
 	Broos bros;
-	bros = ReadFile(nameInputFile);*/
+	bros = ReadFile(nameInputFile);
 
-	Broos bros;
 
 	while (bros.length != -1)
 	{
