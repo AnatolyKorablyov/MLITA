@@ -9,93 +9,66 @@ static const unsigned MAX_ROADS = 100000;
 
 struct GraphNode
 {
-	unsigned home;
-	unsigned destination;
-	int weight;
+	unsigned home = 0;
+	unsigned destination = 0;
+	int weight = 0;
 };
 
 struct Graph
 {
-	unsigned numRoad;
-	unsigned numNodes;
+	int sizePath = 0;
+	unsigned numNodes = 0;
 	std::vector<GraphNode> graphVector;
 };
 
-struct GrapthPath
+void PrintErrorSizeValues()
 {
-	int sizePath;
-	std::vector<GraphNode> graphVector;
-};
+	std::cout << "the number of settlements and the roads are not in a range" << std::endl;
+	std::cout << "correct range (1 <= settlements <= 10000) and (1 <= roads <= 100000)" << std::endl;
+}
 
-std::vector<int> EnterIntWithSpaces(const std::string & string)
+bool isBetween(int value, const std::pair<int, int> & rangeValue)
 {
-	std::vector<int> numbers;
-	int m_number = 0;
-	for (size_t i = 0; i <= string.length(); ++i)
-	{
-		if (string[i] >= '0' && string[i] <= '9')
-		{
-			m_number = m_number * 10 + (string[i] - '0');
-		}
-		else
-		{
-			numbers.push_back(m_number);
-			m_number = 0;
-		}
-	}
-	if (m_number != 0)
-	{
-		numbers.push_back(m_number);
-	}
-	return numbers;
+	return (value >= rangeValue.first && value <= rangeValue.second);
 }
 
 bool ReadFromFile(Graph & graphKraskal, const std::string & nameFile)
 {
-	
 	GraphNode nodeGraph;
 	std::ifstream inpFile(nameFile);
+	
 	if (!inpFile.is_open())
 	{
 		return false;
 	}
-	std::vector<GraphNode> graphz;
-	size_t count = 0;
-	std::string string;
-	std::vector<int> vectorNumbers;
-	while (!inpFile.eof())
+	
+	int numRoads;
+	inpFile >> graphKraskal.numNodes;
+	inpFile >> numRoads;
+	
+	if (!isBetween(graphKraskal.numNodes, { 1, MAX_SETTLEMENTS }) || !isBetween(numRoads, { 1, MAX_ROADS }))
 	{
-		string.clear();
-		std::getline(inpFile, string);
-		vectorNumbers = EnterIntWithSpaces(string);
-		if (count == 0 && vectorNumbers.size() == 2)
-		{
-			graphKraskal.numNodes = vectorNumbers[0];
-			graphKraskal.numRoad = vectorNumbers[1];
-		}
-		else if (count > 0 && vectorNumbers.size() == 3)
-		{
-			nodeGraph.home = vectorNumbers[0];
-			nodeGraph.destination = vectorNumbers[1];
-			nodeGraph.weight = vectorNumbers[2];
-			graphKraskal.graphVector.push_back(nodeGraph);
-		}
-		count += 1;
+		PrintErrorSizeValues();
+		return false;
+	}
+
+	while (inpFile)
+	{
+		inpFile >> nodeGraph.home >> nodeGraph.destination >> nodeGraph.weight;
+		graphKraskal.graphVector.push_back(nodeGraph);
 	}
 	return true;
 }
 
-bool compareWeight(GraphNode a, GraphNode b)
-{
-	return a.weight < b.weight;
-}
-
 void SortGraph(Graph & graphKraskal)
 {
-	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), compareWeight);
+	auto compare = [](const GraphNode &a, const GraphNode &b) {
+		return a.weight < b.weight;
+	};
+	std::sort(graphKraskal.graphVector.begin(), graphKraskal.graphVector.end(), compare);
 }
 
-bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
+bool CheckNode(unsigned node, const Graph & pathGrapth)
 {
 	for (auto i : pathGrapth.graphVector)
 	{
@@ -107,9 +80,9 @@ bool CheckNode(unsigned node, const GrapthPath & pathGrapth)
 	return false;
 }
 
-GrapthPath CalcMinPath(const Graph & graphKraskal)
+Graph CalcMinPath(const Graph & graphKraskal)
 {
-	GrapthPath pathGrapth;
+	Graph pathGrapth;
 	std::vector<GraphNode> vectorGrapth = graphKraskal.graphVector;
 	pathGrapth.graphVector.push_back(vectorGrapth[0]);
 	pathGrapth.sizePath = vectorGrapth[0].weight;
@@ -129,7 +102,7 @@ GrapthPath CalcMinPath(const Graph & graphKraskal)
 	return pathGrapth;
 }
 
-void RecordPathToOutputFile(const std::string & outputFileName, const GrapthPath & pathGrapth)
+void RecordPathToOutputFile(const std::string & outputFileName, const Graph & pathGrapth)
 {
 	std::ofstream outFile(outputFileName);
 	outFile << pathGrapth.sizePath << std::endl;
@@ -144,12 +117,6 @@ void PrintErrorReadFromFile()
 	std::cout << "Error read input file!" << std::endl;
 }
 
-void PrintErrorSizeValues()
-{
-	std::cout << "the number of settlements and the roads are not in a range" << std::endl;
-	std::cout << "correct range (1 <= settlements <= 10000) and (1 <= roads <= 100000)" << std::endl;
-}
-
 bool KraskalRoads(const std::string & inputFileName, const std::string & outputFileName)
 {
 	Graph graphKraskal;
@@ -158,15 +125,8 @@ bool KraskalRoads(const std::string & inputFileName, const std::string & outputF
 		PrintErrorReadFromFile();
 		return false;
 	}
-	else if (!(graphKraskal.numNodes >= 1 && graphKraskal.numNodes <= MAX_SETTLEMENTS &&
-		graphKraskal.numRoad >= 1 && graphKraskal.numRoad <= MAX_ROADS))
-	{
-		PrintErrorSizeValues();
-		return false;
-	}
 	SortGraph(graphKraskal);
-	GrapthPath pathGrapth;
-	pathGrapth = CalcMinPath(graphKraskal);
+	Graph pathGrapth = CalcMinPath(graphKraskal);
 	RecordPathToOutputFile(outputFileName, pathGrapth);
 	return true;
 }
