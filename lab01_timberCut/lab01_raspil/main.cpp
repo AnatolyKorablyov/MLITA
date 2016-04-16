@@ -27,7 +27,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <algorithm>
 
 static const unsigned MIN_LENGTH = 2;
 static const unsigned MAX_LENGTH = 200'000;
@@ -176,8 +175,6 @@ int main(int argc, char * argv[])
 	{
 		return CutTimber(argv[1], argv[2]);
 	}
-	else
-	{
-		std::cout << "Example: lab.exe \"input.txt\" \"output.txt\"" << std::endl;
-	}
+	std::cout << "Example: lab.exe \"input.txt\" \"output.txt\"" << std::endl;
+	return 1;
 }
