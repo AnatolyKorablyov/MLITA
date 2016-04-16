@@ -26,10 +26,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm>
 
 static const unsigned MIN_LENGTH = 2;
-static const unsigned MAX_LENGTH = 100'000;
+static const unsigned MAX_LENGTH = 200'000;
 
 
 struct Timber
@@ -104,53 +105,45 @@ unsigned CalcBisection(const Timber & timber)
 	return price;
 }
 
-// Долгий по времени алгоритм
-unsigned GumUpTimberLongTime(const Timber & timber)	 
-{
-	unsigned numCuts = timber.numCut;
-	unsigned length = timber.length;
-	unsigned price = 0;
-
-	std::vector<unsigned> timberGlueVector;
-
-	for (size_t i = 0; i < numCuts / 2; ++i)
-	{
-		timberGlueVector.push_back(MIN_LENGTH);
-	}
-	price += numCuts / 2 * 2;
-	timberGlueVector.push_back(length - numCuts);
-
-	while (timberGlueVector.size() >= 2)
-	{
-		timberGlueVector[1] += timberGlueVector[0];
-		timberGlueVector.erase(timberGlueVector.begin());
-		price += timberGlueVector[0];
-		std::sort(timberGlueVector.begin(), timberGlueVector.end());
-	}
-	return price;
-}
-
 unsigned GumUpTimber(const Timber & timber)
 {
 	unsigned numCuts = timber.numCut;
 	unsigned length = timber.length;
 	unsigned price = 0;
 
-	std::vector<unsigned> timberGlueVector;
+	price += numCuts / 2 * MIN_LENGTH;
 
-	for (size_t i = 0; i < numCuts / 2; ++i)
+	std::map<unsigned, unsigned> timberGlueMap;
+	timberGlueMap.emplace(length, 0);
+	timberGlueMap.emplace(MIN_LENGTH, numCuts / 2);
+	if (numCuts % 2 != 0)
 	{
-		timberGlueVector.push_back(MIN_LENGTH);
+		timberGlueMap.emplace(MIN_LENGTH - 1, 1);
 	}
-	price += numCuts / 2 * 2;
-	timberGlueVector.push_back(length - numCuts);
+	timberGlueMap[length - numCuts] += 1;
 
-	while (timberGlueVector.size() >= 2)
+	unsigned value = 0;
+	unsigned amount = 0;
+
+	while (timberGlueMap.size() >= 2)
 	{
-		timberGlueVector[1] += timberGlueVector[0];
-		timberGlueVector.erase(timberGlueVector.begin());
-		price += timberGlueVector[0];
-		std::sort(timberGlueVector.begin(), timberGlueVector.end());
+		value = timberGlueMap.begin()->first;
+		amount = timberGlueMap.begin()->second;
+
+		price += amount / 2 * value * 2;
+
+		auto it = timberGlueMap.find(value);
+		timberGlueMap.erase(it);
+		if (amount / 2 != 0)
+		{
+			timberGlueMap.emplace(value * 2, amount / 2);
+		}
+		if (amount % 2 != 0)
+		{
+			price += timberGlueMap.begin()->first + value;
+			timberGlueMap.begin()->second -= 1;
+			timberGlueMap[timberGlueMap.begin()->first + value] += 1;
+		}
 	}
 	return price;
 }
@@ -174,10 +167,17 @@ bool CutTimber(const std::string & inputFileName, const std::string & outputFile
 		price = GumUpTimber(plank);
 	}
 	RecordMinPrice(price, outputFileName);
+	return true;
 }
 
-int main(/*int argc, char * argv[]*/)
+int main(int argc, char * argv[])
 {
-	CutTimber("input7.txt", "output.txt");
-	return 0;
+	if (argc == 3)
+	{
+		return CutTimber(argv[1], argv[2]);
+	}
+	else
+	{
+		std::cout << "Example: lab.exe \"input.txt\" \"output.txt\"" << std::endl;
+	}
 }
