@@ -139,17 +139,17 @@ void PrintExample()
 
 int main(int argc, char * argv[])
 {
-	/*std::string inputFileName = "input.txt";
+	std::string inputFileName = "input.txt";
 	std::string outputFileName = "output.txt";
-	*/
-	if (argc == 3)
-	{
-		return KraskalRoads(/*inputFileName*/ argv[1], /*outputFileName*/ argv[2]);
-	}
-	else
-	{
-		PrintExample();
-		return 1;
-	}
+	
+	/*if (argc == 3)
+	{*/
+		return KraskalRoads(inputFileName /*argv[1]*/, outputFileName /*argv[2]*/);
+	//}
+	//else
+	//{
+	//	PrintExample();
+	//	return 1;
+	//}
 	
 }
