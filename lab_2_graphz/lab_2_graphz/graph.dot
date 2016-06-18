@@ -1,0 +1,17 @@
+graph G {
+0[style="filled", fillcolor="#FF0000"];
+1[style="filled", fillcolor="#FF0000"];
+2[style="filled", fillcolor="#FF0000"];
+3[style="filled", fillcolor="#FF0000"];
+4[style="filled", fillcolor="#FF0000"];
+5[style="filled", fillcolor="#FF0000"];
+0--2 [penwidth=2, label="9"];
+0--1 [penwidth=5, label="4"];
+2--3 [penwidth=5, label="2"];
+0--3 [penwidth=5, label="3"];
+0--5 [penwidth=2, label="8"];
+3--5 [penwidth=5, label="2"];
+4--3 [penwidth=5, label="3"];
+2--4 [penwidth=2, label="5"];
+4--5 [penwidth=2, label="6"];
+}
